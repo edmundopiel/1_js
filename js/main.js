@@ -1,71 +1,85 @@
 document.addEventListener('DOMContentLoaded', function() {
-  // Obtener referencias a elementos HTML
+  // Elementos del juego obtenidos del HTML
+  const suspectsSelect = document.getElementById('suspects');
   const checkButton = document.getElementById('check-btn');
-  const guessInput = document.getElementById('guess-input');
-  const message = document.getElementById('message');
-  const errorPercentageDisplay = document.getElementById('error-percentage');
+  const resultMessage = document.getElementById('result');
+  const clueList = document.getElementById('clue-list');
+  const countdownDisplay = document.getElementById('countdown');
 
-  // Definir límites para el número aleatorio
-  const minNumber = 1;
-  const maxNumber = 10;
+  let countdown = 60; // 60 segundos
 
-  // Generar un número aleatorio entre minNumber y maxNumber
-  let secretNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
+  // Información de los sospechosos
+  const suspects = [
+    { name: 'José', role: 'Médico', description: 'Metódico y reservado.' },
+    { name: 'María', role: 'Abogada', description: 'Perspicaz y decidida.' },
+    { name: 'Andrés', role: 'Profesor', description: 'Inteligente y comprensivo.' },
+    { name: 'Sofía', role: 'Ingeniera', description: 'Precisa y analítica.' },
+    { name: 'Carlos', role: 'Empresario', description: 'Ambicioso y persuasivo.' },
+    { name: 'Camila', role: 'Escritora', description: 'Creativa y observadora.' },
+    { name: 'Luis', role: 'Actor', description: 'Carismático y versátil.' }
+  ];
 
-  // Variables de seguimiento de intentos
-  let attemptsLeft = 3;
-  let incorrectAttempts = 0;
-  let userAttempts = [];
+  // Índice del asesino seleccionado aleatoriamente
+  const killerIndex = Math.floor(Math.random() * suspects.length);
+  const killer = suspects[killerIndex];
 
-  // Acción al hacer clic en el botón
-  checkButton.addEventListener('click', function() {
-    const userGuess = parseInt(guessInput.value);
+  // Pistas sobre el asesino
+  const clues = [
+    `El asesino es ${killer.description.toLowerCase()}.`,
+    // ...más pistas
+  ];
 
-    if (!isNaN(userGuess)) {
-      // Verificar si el número adivinado es correcto
-      if (userGuess === secretNumber) {
-        // Mostrar mensaje de acierto si el número es correcto
-        message.textContent = '¡Adivinaste el número! Felicidades.';
-        message.style.color = 'green';
-        guessInput.disabled = true;
-        checkButton.disabled = true;
-      } else {
-        // Si el número es incorrecto, mostrar pista y actualizar intentos
-        attemptsLeft--;
-        incorrectAttempts++;
-        let hint = userGuess < secretNumber ? 'El número es mayor.' : 'El número es menor.';
-        message.textContent = `Incorrecto. Tienes ${attemptsLeft} intentos. Pista: ${hint}`;
-        message.style.color = 'red';
-
-        // Si se agotan los intentos, mostrar el número secreto y deshabilitar la entrada
-        if (attemptsLeft === 0) {
-          message.textContent = `Se agotaron los intentos. El número era ${secretNumber}.`;
-          message.style.color = 'red';
-          guessInput.disabled = true;
-          checkButton.disabled = true;
-        }
-      }
-
-      // Registrar intento y calcular porcentaje de error
-      userAttempts.push({ number: userGuess, correct: userGuess === secretNumber });
-      const errorPercentage = (incorrectAttempts / userAttempts.length) * 100;
-      errorPercentageDisplay.textContent = `Porcentaje de error: ${errorPercentage.toFixed(2)}%`;
-    } else {
-      // Mensaje para entrada de número inválida
-      message.textContent = 'Por favor, ingresa un número válido.';
-      message.style.color = 'black';
-    }
-
-    guessInput.value = ''; // Limpiar entrada después de cada intento
+  // Mostrar las pistas en la lista
+  clues.forEach(clue => {
+    const li = document.createElement('li');
+    li.textContent = clue;
+    clueList.appendChild(li);
   });
 
-  // Función para encontrar un intento específico por número
-  function findAttemptByNumber(number) {
-    return userAttempts.find(attempt => attempt.number === number);
+  // Función para actualizar el contador de tiempo
+  function updateCountdown() {
+    countdownDisplay.textContent = countdown;
+    countdown--;
+
+    if (countdown < 0) {
+      clearInterval(timer);
+      resultMessage.textContent = 'Se acabó el tiempo. ¡Intenta de nuevo!';
+      resultMessage.style.color = 'red';
+      checkButton.disabled = true;
+    }
   }
 
-  // Función para filtrar intentos correctos
-  function filterCorrectAttempts() {
-    return userAttempts.filter(attempt => attempt.correct);
-  }
+  // Iniciar el contador de tiempo
+  const timer = setInterval(updateCountdown, 1000);
+
+  // Variables para rastrear intentos y errores
+  let incorrectAttempts = 0;
+  let totalAttempts = 0;
+
+  // Llenar el menú de opciones con los sospechosos
+  suspects.forEach((suspect, index) => {
+    const option = document.createElement('option');
+    option.value = index;
+    option.textContent = `${suspect.name} - ${suspect.role}`;
+    suspectsSelect.appendChild(option);
+  });
+
+  // Acción al hacer clic en el botón de comprobación
+  checkButton.addEventListener('click', function() {
+    const selectedSuspect = parseInt(suspectsSelect.value);
+    if (!isNaN(selectedSuspect)) {
+      totalAttempts++;
+      if (selectedSuspect === killerIndex) {
+        resultMessage.textContent = `¡Felicidades! Has atrapado al asesino. Porcentaje de errores: ${(incorrectAttempts / totalAttempts * 100).toFixed(2)}%`;
+        resultMessage.style.color = 'green';
+      } else {
+        resultMessage.textContent = `Lo siento, seleccionaste a la persona equivocada. Porcentaje de errores: ${(incorrectAttempts / totalAttempts * 100).toFixed(2)}%`;
+        resultMessage.style.color = 'red';
+        incorrectAttempts++;
+      }
+    } else {
+      resultMessage.textContent = 'Por favor, selecciona a alguien.';
+      resultMessage.style.color = 'black';
+    }
+  });
 });

@@ -1,27 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rulets</title>
-    <link rel="stylesheet" href="./css/styles.css">
+  <meta charset="UTF-8">
+  <title>¿Quién mató a alguien?</title>
+  <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
-
-  <h1>Adivina el número</h1>
-
+  <h1>¿Quién mató a alguien?</h1>
   <div class="container">
-    <p>Adivina un número entre 1 y 10:</p>
-    <input type="number" id="guess-input">
+    <div class="clues">
+      <h2>Pistas</h2>
+      <ul id="clue-list"></ul>
+      <p id="timer">Tiempo restante: <span id="countdown"></span></p>
+    </div>
+    <div class="suspects">
+      <h2>Sospechosos</h2>
+      <select id="suspects" class="suspects-list">
+
+      </select>
+     
     <button id="check-btn">Comprobar</button>
-    <p id="message"></p>
+    <p id="result"></p>
+    <p id="error-percentage"></p>
   </div>
-
-
-
-    <script src="./js/main.js"></script>
+  <div class="suspect-card">
+    <h3>José</h3>
+    <p><strong>Rol:</strong> Médico</p>
+    <p><strong>Descripción psicológica:</strong> Metódico y reservado.</p>
+  </div>
+  <div class="suspect-card">
+    <h3>María</h3>
+    <p><strong>Rol:</strong> Abogada</p>
+    <p><strong>Descripción psicológica:</strong> Perspicaz y decidida.</p>
+  </div>
+  <div class="suspect-card">
+    <h3>Andrés</h3>
+    <p><strong>Rol:</strong> Profesor</p>
+    <p><strong>Descripción psicológica:</strong> Inteligente y comprensivo.</p>
+  </div>
+  <div class="suspect-card">
+    <h3>Sofía</h3>
+    <p><strong>Rol:</strong> Ingeniera</p>
+    <p><strong>Descripción psicológica:</strong> Precisa y analítica</p>
+  </div>
+  <div class="suspect-card">
+    <h3>Carlos</h3>
+    <p><strong>Rol:</strong> Empresario</p>
+    <p><strong>Descripción psicológica:</strong>Ambicioso y persuasivo..</p>
+  </div>
+  <div class="suspect-card">
+    <h3>Camila</h3>
+    <p><strong>Rol:</strong> Escritora</p>
+    <p><strong>Descripción psicológica:</strong> Creativa y observadora.</p>
+  </div>
+</div>
+  <script src="./js/main.js"></script>
 </body>
 </html>
-
-
-
