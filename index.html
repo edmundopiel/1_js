@@ -16,3 +16,86 @@
   <script src="./js/main.js"></script>
 </body>
 </html>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    const taskInput = $('#taskInput');
+    const addTaskBtn = $('#addTaskBtn');
+    const taskList = $('#taskList');
+
+    function loadTasksFromJSON() {
+      return new Promise((resolve, reject) => {
+        $.get('datos.json')
+          .done(resolve)
+          .fail((xhr, status, error) => reject(`Error al cargar el archivo JSON: ${error}`));
+      });
+    }
+
+    function loadTasks() {
+      const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+      tasks.forEach(task => {
+        createTaskElement(task);
+      });
+    }
+
+    function saveTasks(tasks) {
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    function createTaskElement(taskContent) {
+      const li = $('<li>'); 
+      const taskText = $('<span>');
+      const deleteBtn = $('<button>');
+      const completeBtn = $('<button>');
+
+      taskText.text(taskContent);
+      deleteBtn.text('❌');
+      deleteBtn.addClass('deleteBtn');
+      completeBtn.text('✔️');
+      completeBtn.addClass('completeBtn');
+
+      deleteBtn.on('click', function () {
+        li.remove();
+        const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        const index = tasks.indexOf(taskContent);
+        if (index !== -1) {
+          tasks.splice(index, 1);
+          saveTasks(tasks);
+        }
+      });
+
+      completeBtn.on('click', function () {
+        taskText.toggleClass('taskCompleted');
+      });
+
+      li.append(taskText);
+      li.append(deleteBtn);
+      li.append(completeBtn);
+      taskList.append(li);
+    }
+
+    loadTasksFromJSON()
+      .then(tasks => {
+        tasks.forEach(task => {
+          createTaskElement(task);
+        });
+      })
+      .catch(error => console.error(error));
+
+    loadTasks();
+
+    addTaskBtn.on('click', function () {
+      const taskContent = taskInput.val().trim();
+      if (taskContent !== '') {
+        createTaskElement(taskContent);
+        const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        tasks.push(taskContent);
+        saveTasks(tasks);
+        taskInput.val('');
+      }
+    });
+  });
+</script>
